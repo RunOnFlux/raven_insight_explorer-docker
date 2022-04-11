@@ -15,5 +15,5 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 
 | Variable       | Description                                  | Default |
 |----------------|----------------------------------------------|---------|
-|`DB_COMPONENT_NAME`| Name of mongo host for insight-api. | `fluxmongodb_explorerflux` |
+|`DB_COMPONENT_NAME`| Name of mongo host for insight-api. | `fluxmongodb_raven_insight_explorer` |
  - Name of mongo continer must be same as `DB_COMPONENT_NAME`
