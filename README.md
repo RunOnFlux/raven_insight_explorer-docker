@@ -1,7 +1,3 @@
-# raven_insight_explorer-docker
-Raven Insight Explorer
-
-
 # RAVEN INSIGHT EXPLORER
 <b> DOCKER IMAGE INCLUDES: </b>
 - Raven Daemon
