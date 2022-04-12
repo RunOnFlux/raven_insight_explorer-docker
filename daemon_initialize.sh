@@ -132,8 +132,11 @@ else
   else
   echo -e "${ARROW} ${CYAN}DB_COMPONENT_NAME as host is ${GREEN}${DB_COMPONENT_NAME}${NC}"
   fi
+  
+mkdir -P /root/.ravencore > /dev/null 2>&1
+rm /root/.ravencore/ravencore-node.json > /dev/null 2>&1
 
-cat << EOF > ravencore-node.json
+cat << EOF > /root/.ravencore/ravencore-node.json
 {
   "network": "livenet",
   "port": 3001,
@@ -162,8 +165,8 @@ cat << EOF > ravencore-node.json
         "host": "${DB_COMPONENT_NAME}",
         "port": "27017",
         "database": "raven-api-livenet",
-        "user": "test",
-        "password": "test1234"
+        "user": "",
+        "password": ""
       }
     },
     "ravend": {
@@ -182,10 +185,10 @@ cat << EOF > ravencore-node.json
   }
 }
 EOF
-
-cd data
+mkdir /root/.ravencore/data > /dev/null 2>&1
+rm /root/.ravencore/data/raven.conf > /dev/null 2>&1
 echo -e "${ARROW} ${YELLOW}Creating raven daemon config file...${NC}"
-cat << EOF > raven.conf
+cat << EOF > /root/.ravencore/data/raven.conf
 server=1
 whitelist=127.0.0.1
 txindex=1
@@ -208,7 +211,7 @@ maxtxfee=1.0
 dbmaxfilesize=64
 EOF
 
-  cd /root/ravencore-node/bin/mynode/node_modules
+  cd /root/ravencore-node/node_modules
   echo -e "${ARROW} ${YELLOW}Installing insight-api && insight-ui...${NC}"
   git clone https://github.com/RavenDevKit/insight-api.git > /dev/null 2>&1
   git clone https://github.com/RavenDevKit/insight-ui.git > /dev/null 2>&1
