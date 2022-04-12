@@ -19,24 +19,95 @@ HOT="${ORANGE}\xF0\x9F\x94\xA5${NC}"
 WORNING="${RED}\xF0\x9F\x9A\xA8${NC}"
 
 
-function tar_file_unpack()
-{
-    echo -e "${ARROW} ${YELLOW}Unpacking bootstrap archive file...${NC}"
-    pv $1 | tar -zx -C $2
+PATH_BIN="root"
+
+function extract_file() {
+    local extraction_dir="./"
+    if [ -n "$2" ]; then
+        extraction_dir="$2"
+    fi
+
+    if [[ $1 =~ .*zip$ ]]; then
+        echo "Unzipping file ${1}"
+        unzip $1 -d ${extraction_dir} || return 1
+    elif [[ $1 =~ .*tar.gz$ ]]; then
+        echo "Untar file ${1}"
+        tar zxf $1 -C ${extraction_dir} || return 1
+    fi
+    return 0
+}
+
+function update_daemon(){
+
+ DOWN_URL=$(curl --silent "https://api.github.com/repos/RavenProject/Ravencoin/releases/latest" | jq -r '.assets[] | .browser_download_url' | grep -e ".*x86.*disable-wallet.*")
+ VERSION=$(curl --silent "https://api.github.com/repos/RavenProject/Ravencoin/releases/latest" | jq -r .tag_name)
+
+if [[ ! -f /$PATH_BIN/ravencore-node/bin/version.json ]]; then
+
+ wget  --tries=5 $DOWN_URL -P /$PATH_BIN/ravencore-node/bin/tmp
+ zip_file="${DOWN_URL##*/}"
+ jq -n --arg version $VERSION  '{"version":"\($version)"}' > /$PATH_BIN/ravencore-node/bin/version.json
+ cd /$PATH_BIN/ravencore-node/bin/tmp
+ extract_file ${zip_file}
+ local targz_file=$(find ./linux-disable-wallet/ -type f -name '*.tar.gz' 2>/dev/null)
+ echo -e "$targz_file"
+ extract_file ${targz_file}
+ mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
+ sudo chmod +x /usr/local/bin/ravend
+ sudo chmod +x /usr/local/bin/raven-cli
+ cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
+ cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
+ sudo chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
+ sudo chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+ cd /$PATH_BIN/ravencore-node/bin
+ sudo rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+ 
+else
+
+   local_version=$(jq -r .version /$PATH_BIN/ravencore-node/bin/version.json)
+   echo -e "Local: $local_version, Remote: $VERSION"
+
+  if [[ "$VERSION" != "" && "$local_version" != "$VERSION" ]]; then
+
+   echo -e "New version detected: $VERSION"
+   wget  --tries=5 $DOWN_URL -P /$PATH_BIN/ravencore-node/bin/tmp
+   zip_file="${DOWN_URL##*/}"
+   sudo rm /$PATH_BIN/ravencore-node/bin/version.json
+   jq -n --arg version $VERSION  '{"version":"\($version)"}' > /home/$USER/ravencore-node/bin/version.json
+   cd /$PATH_BIN/ravencore-node/bin/tmp
+   extract_file ${zip_file}
+   local targz_file=$(find ./linux-disable-wallet/ -type f -name '*.tar.gz' 2>/dev/null)
+   echo -e "$targz_file"
+   extract_file ${targz_file}
+   mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
+   sudo chmod +x /usr/local/bin/ravend
+   sudo chmod +x /usr/local/bin/raven-cli
+   rm /$PATH_BIN/ravencore-node/bin/ravend
+   rm /$PATH_BIN/ravencore-node/bin/raven-cli
+   cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
+   cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
+   sudo chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
+   sudo chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+   cd /$PATH_BIN/ravencore-node/bin
+   sudo rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+
+  fi
+fi
+
 }
 
 cd /root/
+echo -e "${ARROW} ${YELLOW}Installing dependencies...${NC}"
 curl -sL https://deb.nodesource.com/setup_8.x | bash - > /dev/null 2>&1
 apt-get install -y nodejs build-essential libzmq3-dev npm git > /dev/null 2>&1
 
-DBDIR="/root/bitcore-node/bin"
-if [ -d $DBDIR ]; then
-  echo "Directory $DBDIR already exists, we will not download bootstrap. Use hard redeploy if you want to apply a new bootstrap."
-else
-  echo -e "${ARROW} ${YELLOW}Installing dependencies...${NC}"
-  curl -sL https://deb.nodesource.com/setup_8.x | bash - > /dev/null 2>&1
-  apt-get install -y nodejs build-essential libzmq3-dev npm git > /dev/null 2>&1
 
+DDIR="/root/ravencore-node/bin"
+if [ -d $DDIR ]; then
+  echo -e ""
+  echo -e "Ravencore-node already installed..."
+  echo -e ""
+else
   #core-node
   cd /root/
   echo -e "${ARROW} ${YELLOW}Installing ravencore-node...${NC}"
@@ -145,6 +216,7 @@ EOF
   npm install > /dev/null 2>&1
 fi
 
+update_daemon
 cd /root/ravencore-node/bin/mynode
 while true; do
 echo -e "${ARROW} ${YELLOW}Starting raven insight explorer...${NC}"
