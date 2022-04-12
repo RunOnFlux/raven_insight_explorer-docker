@@ -53,14 +53,16 @@ if [[ ! -f /$PATH_BIN/ravencore-node/bin/version.json ]]; then
  echo -e "$targz_file"
  extract_file ${targz_file}
  mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
- sudo chmod +x /usr/local/bin/ravend
- sudo chmod +x /usr/local/bin/raven-cli
+ chmod +x /usr/local/bin/ravend
+ chmod +x /usr/local/bin/raven-cli
+ rm /$PATH_BIN/ravencore-node/bin/ravend
+ rm /$PATH_BIN/ravencore-node/bin/raven-cli
  cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
  cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
- sudo chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
- sudo chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+ chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
+ chmod +x /$PATH_BIN/ravencore-node/bin/ravend
  cd /$PATH_BIN/ravencore-node/bin
- sudo rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+ rm -rf /$PATH_BIN/ravencore-node/bin/tmp
  
 else
 
@@ -72,7 +74,7 @@ else
    echo -e "New version detected: $VERSION"
    wget  --tries=5 $DOWN_URL -P /$PATH_BIN/ravencore-node/bin/tmp
    zip_file="${DOWN_URL##*/}"
-   sudo rm /$PATH_BIN/ravencore-node/bin/version.json
+   rm /$PATH_BIN/ravencore-node/bin/version.json
    jq -n --arg version $VERSION  '{"version":"\($version)"}' > /home/$USER/ravencore-node/bin/version.json
    cd /$PATH_BIN/ravencore-node/bin/tmp
    extract_file ${zip_file}
@@ -80,16 +82,16 @@ else
    echo -e "$targz_file"
    extract_file ${targz_file}
    mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
-   sudo chmod +x /usr/local/bin/ravend
-   sudo chmod +x /usr/local/bin/raven-cli
+   chmod +x /usr/local/bin/ravend
+   chmod +x /usr/local/bin/raven-cli
    rm /$PATH_BIN/ravencore-node/bin/ravend
    rm /$PATH_BIN/ravencore-node/bin/raven-cli
    cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
    cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
-   sudo chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
-   sudo chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+   chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
+   chmod +x /$PATH_BIN/ravencore-node/bin/ravend
    cd /$PATH_BIN/ravencore-node/bin
-   sudo rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+   rm -rf /$PATH_BIN/ravencore-node/bin/tmp
 
   fi
 fi
@@ -116,6 +118,7 @@ else
   npm install > /dev/null 2>&1
   npm install https://github.com/traysi/x16rv2_hash/ > /dev/null 2>&1
   npm install https://github.com/traysi/kawpow-light-verifier/ > /dev/null 2>&1
+  npm install node-x16r > /dev/null 2>&1
   cd bin
   chmod +x ravencore-node
   ./ravencore-node create mynode > /dev/null 2>&1
