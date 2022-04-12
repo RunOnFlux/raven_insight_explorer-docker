@@ -53,16 +53,16 @@ if [[ ! -f /$PATH_BIN/ravencore-node/bin/version.json ]]; then
  echo -e "$targz_file"
  extract_file ${targz_file}
  mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
- chmod +x /usr/local/bin/ravend
- chmod +x /usr/local/bin/raven-cli
- rm /$PATH_BIN/ravencore-node/bin/ravend
- rm /$PATH_BIN/ravencore-node/bin/raven-cli
- cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
- cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
- chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
- chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+ chmod +x /usr/local/bin/ravend > /dev/null 2>&1
+ chmod +x /usr/local/bin/raven-cli > /dev/null 2>&1
+ rm /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
+ rm /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
+ cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ chmod +x /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
  cd /$PATH_BIN/ravencore-node/bin
- rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+ rm -rf /$PATH_BIN/ravencore-node/bin/tmp > /dev/null 2>&1
  
 else
 
@@ -82,16 +82,16 @@ else
    echo -e "$targz_file"
    extract_file ${targz_file}
    mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
-   chmod +x /usr/local/bin/ravend
-   chmod +x /usr/local/bin/raven-cli
-   rm /$PATH_BIN/ravencore-node/bin/ravend
-   rm /$PATH_BIN/ravencore-node/bin/raven-cli
-   cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend
-   cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli
-   chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli
-   chmod +x /$PATH_BIN/ravencore-node/bin/ravend
+   chmod +x /usr/local/bin/ravend > /dev/null 2>&1
+   chmod +x /usr/local/bin/raven-cli > /dev/null 2>&1
+   rm /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
+   rm /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
+   cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   chmod +x /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
    cd /$PATH_BIN/ravencore-node/bin
-   rm -rf /$PATH_BIN/ravencore-node/bin/tmp
+   rm -rf /$PATH_BIN/ravencore-node/bin/tmp > /dev/null 2>&1
 
   fi
 fi
@@ -123,7 +123,7 @@ else
   chmod +x ravencore-node
   ./ravencore-node create mynode > /dev/null 2>&1
   cd mynode
-  rm ravencore-node.json
+  rm ravencore-node.json > /dev/null 2>&1
   echo -e "${ARROW} ${YELLOW}Creating bitcore-node config file...${NC}"
 
   if [[ "$DB_COMPONENT_NAME" == "" ]]; then
