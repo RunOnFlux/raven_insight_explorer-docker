@@ -22,18 +22,18 @@ WORNING="${RED}\xF0\x9F\x9A\xA8${NC}"
 PATH_BIN="root"
 
 function extract_file() {
+
     local extraction_dir="./"
     if [ -n "$2" ]; then
         extraction_dir="$2"
     fi
 
     if [[ $1 =~ .*zip$ ]]; then
-        echo "Unzipping file ${1}"
-        unzip $1 -d ${extraction_dir} || return 1
+        unzip $1 -d ${extraction_dir} > /dev/null 2>&1 || return 1
     elif [[ $1 =~ .*tar.gz$ ]]; then
-        echo "Untar file ${1}"
-        tar zxf $1 -C ${extraction_dir} || return 1
+        tar zxf $1 -C ${extraction_dir} > /dev/null 2>&1 || return 1
     fi
+
     return 0
 }
 
@@ -42,56 +42,55 @@ function update_daemon(){
  DOWN_URL=$(curl --silent "https://api.github.com/repos/RavenProject/Ravencoin/releases/latest" | jq -r '.assets[] | .browser_download_url' | grep -e ".*x86.*disable-wallet.*")
  VERSION=$(curl --silent "https://api.github.com/repos/RavenProject/Ravencoin/releases/latest" | jq -r .tag_name)
 
-if [[ ! -f /$PATH_BIN/ravencore-node/bin/version.json ]]; then
-
- wget  --tries=5 $DOWN_URL -P /$PATH_BIN/ravencore-node/bin/tmp
+if [[ ! -f /$PATH_BIN/.ravencore/ravencore-node/bin/version.json ]]; then
+ echo -e "${ARROW} ${YELLOW}Installing raven daemon...${NC}"
+ wget  --tries=5 $DOWN_URL -P /$PATH_BIN/.ravencore/ravencore-node/bin/tmp > /dev/null 2>&1
  zip_file="${DOWN_URL##*/}"
- jq -n --arg version $VERSION  '{"version":"\($version)"}' > /$PATH_BIN/ravencore-node/bin/version.json
- cd /$PATH_BIN/ravencore-node/bin/tmp
+ jq -n --arg version $VERSION  '{"version":"\($version)"}' > /$PATH_BIN/.ravencore/ravencore-node/bin/version.json
+ cd /$PATH_BIN/.ravencore/ravencore-node/bin/tmp
  extract_file ${zip_file}
  local targz_file=$(find ./linux-disable-wallet/ -type f -name '*.tar.gz' 2>/dev/null)
- echo -e "$targz_file"
  extract_file ${targz_file}
  mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
  chmod +x /usr/local/bin/ravend > /dev/null 2>&1
  chmod +x /usr/local/bin/raven-cli > /dev/null 2>&1
- rm /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
- rm /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
- cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
- cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
- chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
- chmod +x /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
- cd /$PATH_BIN/ravencore-node/bin
- rm -rf /$PATH_BIN/ravencore-node/bin/tmp > /dev/null 2>&1
- 
+ rm /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+ rm /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ cp /usr/local/bin/ravend /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+ cp /usr/local/bin/raven-cli /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ chmod +x /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+ chmod +x /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+ cd /$PATH_BIN/.ravencore/ravencore-node/bin
+ rm -rf /$PATH_BIN/.ravencore/ravencore-node/bin/tmp > /dev/null 2>&1
+
 else
 
-   local_version=$(jq -r .version /$PATH_BIN/ravencore-node/bin/version.json)
+   echo -e "${ARROW} ${YELLOW}Checking daemon update...${NC}"
+   local_version=$(jq -r .version /$PATH_BIN/.ravencore/ravencore-node/bin/version.json)
    echo -e "Local: $local_version, Remote: $VERSION"
 
   if [[ "$VERSION" != "" && "$local_version" != "$VERSION" ]]; then
 
    echo -e "New version detected: $VERSION"
-   wget  --tries=5 $DOWN_URL -P /$PATH_BIN/ravencore-node/bin/tmp
+   wget  --tries=5 $DOWN_URL -P /$PATH_BIN/.ravencore/ravencore-node/bin/tmp > /dev/null 2>&1
    zip_file="${DOWN_URL##*/}"
-   rm /$PATH_BIN/ravencore-node/bin/version.json
-   jq -n --arg version $VERSION  '{"version":"\($version)"}' > /home/$USER/ravencore-node/bin/version.json
-   cd /$PATH_BIN/ravencore-node/bin/tmp
+   rm /$PATH_BIN/.ravencore/ravencore-node/bin/version.json
+   jq -n --arg version $VERSION  '{"version":"\($version)"}' > /$PATH_BIN/.ravencore/ravencore-node/bin/version.json
+   cd /$PATH_BIN/.ravencore/ravencore-node/bin/tmp
    extract_file ${zip_file}
    local targz_file=$(find ./linux-disable-wallet/ -type f -name '*.tar.gz' 2>/dev/null)
-   echo -e "$targz_file"
    extract_file ${targz_file}
    mv $(find . -type d -name 'raven*' 2>/dev/null)/bin/raven* /usr/local/bin
    chmod +x /usr/local/bin/ravend > /dev/null 2>&1
    chmod +x /usr/local/bin/raven-cli > /dev/null 2>&1
-   rm /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
-   rm /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
-   cp /usr/local/bin/ravend /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
-   cp /usr/local/bin/raven-cli /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
-   chmod +x /$PATH_BIN/ravencore-node/bin/raven-cli > /dev/null 2>&1
-   chmod +x /$PATH_BIN/ravencore-node/bin/ravend > /dev/null 2>&1
-   cd /$PATH_BIN/ravencore-node/bin
-   rm -rf /$PATH_BIN/ravencore-node/bin/tmp > /dev/null 2>&1
+   rm /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+   rm /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   cp /usr/local/bin/ravend /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+   cp /usr/local/bin/raven-cli /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   chmod +x /$PATH_BIN/.ravencore/ravencore-node/bin/raven-cli > /dev/null 2>&1
+   chmod +x /$PATH_BIN/.ravencore/ravencore-node/bin/ravend > /dev/null 2>&1
+   cd /$PATH_BIN/.ravencore/ravencore-node/bin
+   rm -rf /$PATH_BIN/.ravencore/ravencore-node/bin/tmp > /dev/null 2>&1
 
   fi
 fi
@@ -104,14 +103,15 @@ curl -sL https://deb.nodesource.com/setup_8.x | bash - > /dev/null 2>&1
 apt-get install -y nodejs build-essential libzmq3-dev npm git > /dev/null 2>&1
 
 
-DDIR="/root/ravencore-node/bin"
+DDIR="/root/.ravencore/ravencore-node/bin"
 if [ -d $DDIR ]; then
   echo -e ""
   echo -e "Ravencore-node already installed..."
   echo -e ""
 else
   #core-node
-  cd /root/
+  mkdir -p /root/.ravencore > /dev/null 2>&1
+  cd /root/.ravencore
   echo -e "${ARROW} ${YELLOW}Installing ravencore-node...${NC}"
   git clone https://github.com/RavenDevKit/ravencore-node.git > /dev/null 2>&1
   cd ravencore-node
@@ -132,7 +132,7 @@ else
   else
   echo -e "${ARROW} ${CYAN}DB_COMPONENT_NAME as host is ${GREEN}${DB_COMPONENT_NAME}${NC}"
   fi
-  
+
 mkdir -P /root/.ravencore > /dev/null 2>&1
 rm /root/.ravencore/ravencore-node.json > /dev/null 2>&1
 
@@ -211,7 +211,7 @@ maxtxfee=1.0
 dbmaxfilesize=64
 EOF
 
-  cd /root/ravencore-node/node_modules
+  cd /root/.ravencore/ravencore-node/node_modules
   echo -e "${ARROW} ${YELLOW}Installing insight-api && insight-ui...${NC}"
   git clone https://github.com/RavenDevKit/insight-api.git > /dev/null 2>&1
   git clone https://github.com/RavenDevKit/insight-ui.git > /dev/null 2>&1
@@ -223,7 +223,7 @@ EOF
 fi
 
 update_daemon
-cd /root/ravencore-node/bin/mynode
+cd /root/.ravencore/ravencore-node/bin/mynode
 while true; do
 echo -e "${ARROW} ${YELLOW}Starting raven insight explorer...${NC}"
 echo -e
