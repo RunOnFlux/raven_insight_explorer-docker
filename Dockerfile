@@ -3,7 +3,7 @@ ENV DEBIAN_FRONTEND noninteractive
 LABEL com.centurylinklabs.watchtower.enable="true"
 
 RUN apt-get update && \
-apt-get install -y wget curl jq lsb-release libzmq3 libzmq3-dev python3 gnupg dirmngr unzip tar pv
+apt-get install -y wget curl jq lsb-release libzmq3-dev python3 gnupg dirmngr unzip tar pv
 
 RUN mkdir -p /root/ravencore-node
 COPY daemon_initialize.sh /daemon_initialize.sh
