@@ -67,11 +67,11 @@ else
 
    echo -e "${ARROW} ${YELLOW}Checking daemon update...${NC}"
    local_version=$(jq -r .version /$PATH_BIN/.ravencore/ravencore-node/bin/version.json)
-   echo -e "Local: $local_version, Remote: $VERSION"
+   echo -e "${ARROW} ${YELLOW}Local: ${GREEN}$local_version${YELLOW}, Remote: ${GREEN}$VERSION ${NC}"
 
   if [[ "$VERSION" != "" && "$local_version" != "$VERSION" ]]; then
 
-   echo -e "New version detected: $VERSION"
+   echo -e "${ARROW} ${YELLOW}New version detected: ${GREEN}$VERSION ${NC}"
    wget  --tries=5 $DOWN_URL -P /$PATH_BIN/.ravencore/ravencore-node/bin/tmp > /dev/null 2>&1
    zip_file="${DOWN_URL##*/}"
    rm /$PATH_BIN/.ravencore/ravencore-node/bin/version.json
@@ -98,16 +98,14 @@ fi
 }
 
 cd /root/
+echo -e ""
 echo -e "${ARROW} ${YELLOW}Installing dependencies...${NC}"
 curl -sL https://deb.nodesource.com/setup_8.x | bash - > /dev/null 2>&1
 apt-get install -y nodejs build-essential libzmq3-dev npm git > /dev/null 2>&1
 
-
 DDIR="/root/.ravencore/ravencore-node/bin"
 if [ -d $DDIR ]; then
-  echo -e ""
-  echo -e "Ravencore-node already installed..."
-  echo -e ""
+  echo -e "${ARROW} ${YELLOW}Ravencore-node already installed...${NC}"
 else
   #core-node
   mkdir -p /root/.ravencore > /dev/null 2>&1
@@ -127,7 +125,7 @@ else
   echo -e "${ARROW} ${YELLOW}Creating bitcore-node config file...${NC}"
 
   if [[ "$DB_COMPONENT_NAME" == "" ]]; then
-  echo -e "${ARROW} ${CYAN}Set default value of DB_COMPONENT_NAME as host...${NC}"
+  echo -e "${ARROW} ${CYAN}Set default value of DB_COMPONENT_NAME${NC}"
   DB_COMPONENT_NAME="fluxmongodb_raven_insight_explorer"
   else
   echo -e "${ARROW} ${CYAN}DB_COMPONENT_NAME as host is ${GREEN}${DB_COMPONENT_NAME}${NC}"
@@ -226,7 +224,7 @@ update_daemon
 cd /root/.ravencore/ravencore-node/bin/mynode
 while true; do
 echo -e "${ARROW} ${YELLOW}Starting raven insight explorer...${NC}"
-echo -e
+echo -e ""
 ../ravencore-node start
 sleep 60
 done
