@@ -5,7 +5,7 @@ LABEL com.centurylinklabs.watchtower.enable="true"
 RUN apt-get update && \
 apt-get install -y wget curl jq lsb-release libzmq3-dev python3 gnupg dirmngr unzip tar pv
 
-RUN mkdir -p /root/ravencore-node
+RUN mkdir -p /root/.ravencore/ravencore-node
 COPY daemon_initialize.sh /daemon_initialize.sh
 COPY check-health.sh /check-health.sh
 VOLUME /root/.ravencore
